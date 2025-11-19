@@ -17,14 +17,14 @@ export const tokenMiddleware: ResponseMiddleware = (response, next) => {
   let refreshTokenHeader =
     response.headers["RefreshToken"] || response.headers["refreshToken"];
 
-  let foundInResponse = true;
+  // Extraction depuis le corps de la réponse
+  // Le back-end renvoie access_token et refresh_token directement à la racine
   if (response.data) {
     const responseData = response.data;
-    if (!responseData.token) {
-      foundInResponse = false;
+    if (responseData.access_token) {
+      authHeader = responseData.access_token;
     }
-    if (foundInResponse) {
-      authHeader = responseData.token;
+    if (responseData.refresh_token) {
       refreshTokenHeader = responseData.refresh_token;
     }
   }

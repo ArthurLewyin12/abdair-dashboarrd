@@ -22,7 +22,7 @@ export class AuthService {
    */
   async refreshToken(refreshToken: string): Promise<any> {
     return request.post<any>(AuthEndpoints.REFRESH_TOKEN, {
-      refresh_token: refreshToken,
+      refreshToken: refreshToken,
     });
   }
 

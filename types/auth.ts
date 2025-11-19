@@ -1,4 +1,3 @@
-import { Token } from "./token";
 import { User } from "./user";
 
 export interface LoginCredentials {
@@ -6,7 +5,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+/**
+ * Réponse d'authentification du back-end.
+ * Les champs de token sont directement à la racine (pas dans un objet nested).
+ */
 export interface AuthResponse {
-  token: Token;
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
   user: User;
 }

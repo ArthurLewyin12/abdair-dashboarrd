@@ -42,8 +42,8 @@ export const useSession = () => {
       }
 
       try {
-        const fetchedResponse = await authService.getMe();
-        const fetchedUser = fetchedResponse.user; // Extract the user object
+        const fetchedUser = await authService.getMe();
+        // Le back-end retourne directement l'objet User (pas wrapped)
         Cookies.set(
           "user_" + ENVIRONNEMENTS.UNIVERSE,
           JSON.stringify(fetchedUser),
@@ -74,13 +74,16 @@ export const useSession = () => {
         message: "Vous avez été déconnecté.",
       });
       Cookies.remove("token_" + ENVIRONNEMENTS.UNIVERSE);
+      Cookies.remove("refreshToken_" + ENVIRONNEMENTS.UNIVERSE);
       Cookies.remove("user_" + ENVIRONNEMENTS.UNIVERSE);
       queryClient.setQueryData(createQueryKey("me"), null);
       queryClient.invalidateQueries();
     },
     onError: (error) => {
       console.error("Logout error", error);
+      // Même en cas d'erreur, on nettoie les cookies
       Cookies.remove("token_" + ENVIRONNEMENTS.UNIVERSE);
+      Cookies.remove("refreshToken_" + ENVIRONNEMENTS.UNIVERSE);
       Cookies.remove("user_" + ENVIRONNEMENTS.UNIVERSE);
       queryClient.setQueryData(createQueryKey("me"), null);
       queryClient.invalidateQueries();

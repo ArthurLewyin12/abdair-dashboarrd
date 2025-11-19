@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { GalleryVerticalEnd } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { Spinner } from "@/components/ui/spinner";
 import { useLogin } from "@/hooks/useLogin";
 import { useSession } from "@/hooks/useSession";
 import { toast } from "@/lib/toast";
@@ -31,6 +33,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
   const loginMutation = useLogin();
   const { login: sessionLogin } = useSession();
 
@@ -49,17 +52,26 @@ export function LoginForm({
 
   useEffect(() => {
     if (loginMutation.isSuccess && loginMutation.data) {
-      const { user, token } = loginMutation.data;
-      Cookies.set(`token_${ENVIRONNEMENTS.UNIVERSE}`, JSON.stringify(token));
+      const { user, access_token } = loginMutation.data;
+      Cookies.set(`token_${ENVIRONNEMENTS.UNIVERSE}`, access_token);
       sessionLogin(user);
-      // TODO: redirect to dashboard
+
+      // Afficher un toast de succès
+      toast({
+        variant: "default",
+        title: "Connexion réussie",
+        message: `Bienvenue ${user.prenom} ${user.nom} !`,
+      });
+
+      // Redirection vers le dashboard
+      router.push("/dashboard");
     }
-  }, [loginMutation.isSuccess, loginMutation.data, sessionLogin]);
+  }, [loginMutation.isSuccess, loginMutation.data, sessionLogin, router]);
 
   useEffect(() => {
     if (loginMutation.isError) {
       toast({
-        variant: "default",
+        variant: "error",
         title: "Erreur de connexion",
         message: "Email ou mot de passe incorrect.",
       });
@@ -144,9 +156,14 @@ export function LoginForm({
               className="rounded-2xl py-5"
               disabled={form.state.isSubmitting || loginMutation.isPending}
             >
-              {form.state.isSubmitting || loginMutation.isPending
-                ? "Logging in..."
-                : "Login"}
+              {form.state.isSubmitting || loginMutation.isPending ? (
+                <>
+                  <Spinner className="mr-2" />
+                  Connexion en cours...
+                </>
+              ) : (
+                "Se connecter"
+              )}
             </Button>
           </Field>
           <FieldSeparator>Or</FieldSeparator>

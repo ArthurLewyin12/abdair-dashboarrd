@@ -55,7 +55,14 @@ export const errorHandlingMiddleware: ResponseMiddleware = async (
 
   const originalRequest = response.config;
 
-  if (response.status === 401) {
+  // Endpoints publics où un 401 ne signifie PAS "token expiré" mais "mauvais credentials"
+  const publicEndpoints = ['/auth/login', '/auth/register'];
+  const isPublicEndpoint = publicEndpoints.some(endpoint =>
+    originalRequest.url?.includes(endpoint)
+  );
+
+  // Ne pas tenter de refresh sur les endpoints publics
+  if (response.status === 401 && !isPublicEndpoint) {
     if (isRefreshing) {
       return new Promise(function (resolve, reject) {
         failedQueue.push({ resolve, reject });
