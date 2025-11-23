@@ -120,6 +120,18 @@ export const request = {
   },
 
   /**
+   * Exécute une requête PATCH.
+   * @template T Le type de données attendu dans la réponse.
+   * @param {string} url L'URL de l'endpoint.
+   * @param {unknown} [data] Le corps de la requête.
+   * @returns {Promise<T>} Une promesse qui se résout avec les données de la réponse.
+   */
+  patch: async <T>(url: string, data?: unknown): Promise<T> => {
+    const response = await api.patch<T>(url, data);
+    return response.data;
+  },
+
+  /**
    * Exécute une requête DELETE.
    * @template T Le type de données attendu dans la réponse.
    * @param {string} url L'URL de l'endpoint.

@@ -55,19 +55,33 @@ export const errorHandlingMiddleware: ResponseMiddleware = async (
 
   const originalRequest = response.config;
 
-  // Endpoints publics où un 401 ne signifie PAS "token expiré" mais "mauvais credentials"
-  const publicEndpoints = ['/auth/login', '/auth/register'];
+  // Endpoints publics où un 401 ne signifie PAS "token expiré" mais "mauvais credentials" ou une action de déconnexion
+  const publicEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
   const isPublicEndpoint = publicEndpoints.some(endpoint =>
     originalRequest.url?.includes(endpoint)
   );
 
   // Ne pas tenter de refresh sur les endpoints publics
-  if (response.status === 401 && !isPublicEndpoint) {
+  // 401 = token expiré/invalide, 403 = token expiré (selon certains backends)
+  if ((response.status === 401 || response.status === 403) && !isPublicEndpoint) {
     if (isRefreshing) {
       return new Promise(function (resolve, reject) {
         failedQueue.push({ resolve, reject });
       })
         .then((token) => {
+          // Relancer la requête originale avec la bonne méthode
+          const method = originalRequest.method?.toLowerCase() || 'get';
+          if (method === 'get') {
+            return request.get(originalRequest.url!);
+          } else if (method === 'post') {
+            return request.post(originalRequest.url!, originalRequest.data);
+          } else if (method === 'put') {
+            return request.put(originalRequest.url!, originalRequest.data);
+          } else if (method === 'patch') {
+            return request.patch(originalRequest.url!, originalRequest.data);
+          } else if (method === 'delete') {
+            return request.delete(originalRequest.url!);
+          }
           return request.get(originalRequest.url!);
         })
         .catch((err) => {
@@ -82,23 +96,46 @@ export const errorHandlingMiddleware: ResponseMiddleware = async (
     if (!refresh_token) {
       isRefreshing = false;
       // Gérer la déconnexion de l'utilisateur ici si nécessaire
+      if (typeof window !== "undefined") {
+        Cookies.remove("token_" + ENVIRONNEMENTS.UNIVERSE);
+        Cookies.remove("refreshToken_" + ENVIRONNEMENTS.UNIVERSE);
+        window.location.href = "/login";
+      }
       return Promise.reject(new Error("Session expirée."));
     }
 
     try {
       const refreshResponse = await authService.refreshToken(refresh_token);
-      if (refreshResponse.succes) {
-        processQueue(null, refreshResponse.token);
-        return request.get(originalRequest.url!); // Relancer la requête originale
+      // Le backend renvoie access_token et refresh_token
+      if (refreshResponse.access_token) {
+        // Les tokens sont automatiquement stockés par tokenMiddleware
+        processQueue(null, refreshResponse.access_token);
+
+        // Relancer la requête originale avec la bonne méthode
+        const method = originalRequest.method?.toLowerCase() || 'get';
+        if (method === 'get') {
+          return request.get(originalRequest.url!);
+        } else if (method === 'post') {
+          return request.post(originalRequest.url!, originalRequest.data);
+        } else if (method === 'put') {
+          return request.put(originalRequest.url!, originalRequest.data);
+        } else if (method === 'patch') {
+          return request.patch(originalRequest.url!, originalRequest.data);
+        } else if (method === 'delete') {
+          return request.delete(originalRequest.url!);
+        }
+        return request.get(originalRequest.url!);
       } else {
-        throw new Error(refreshResponse.message);
+        throw new Error(refreshResponse.message || "Impossible de rafraîchir le token");
       }
     } catch (error: any) {
       processQueue(error, null);
       // Gérer la déconnexion de l'utilisateur ici
-      Cookies.remove("token_" + ENVIRONNEMENTS.UNIVERSE);
-      Cookies.remove("refreshToken_" + ENVIRONNEMENTS.UNIVERSE);
-      window.location.href = "/login"; // Redirection vers la page de login
+      if (typeof window !== "undefined") {
+        Cookies.remove("token_" + ENVIRONNEMENTS.UNIVERSE);
+        Cookies.remove("refreshToken_" + ENVIRONNEMENTS.UNIVERSE);
+        window.location.href = "/login";
+      }
       return Promise.reject(error);
     } finally {
       isRefreshing = false;

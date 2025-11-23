@@ -11,3 +11,45 @@ export enum AuthEndpoints {
   RESET_LINK = "/auth/password/email",
   REFRESH_TOKEN = "/auth/refresh",
 }
+
+/**
+ * Endpoints relatifs à la gestion des offres d'emploi.
+ */
+export enum JobOfferEndpoints {
+  LIST = "/job-offers",
+  DETAIL = "/job-offers/:id",
+  OPEN = "/job-offers/open",
+  PAGINATED = "/job-offers/paginated",
+  MY_OFFERS = "/job-offers/my-offers",
+  CREATE = "/job-offers",
+  UPDATE = "/job-offers/:id",
+  DELETE = "/job-offers/:id",
+  CLOSE = "/job-offers/:id/close",
+}
+
+/**
+ * Endpoints relatifs à la gestion des candidatures.
+ */
+export enum JobApplicationEndpoints {
+  CREATE = "/applications",
+  DETAIL = "/applications/:id",
+  BY_JOB_OFFER = "/applications/job-offer/:jobOfferId",
+  MY_RECEIVED = "/applications/my-received",
+  UPDATE_STATUS = "/applications/:id/status",
+  DELETE = "/applications/:id",
+}
+
+/**
+ * Endpoints relatifs à la gestion des services/prestations.
+ */
+export enum ServiceEndpoints {
+  LIST = "/services",
+  PAGINATED = "/services/paginated",
+  ACTIVE = "/services/active",
+  DETAIL = "/services/:id",
+  CREATE = "/services",
+  UPDATE = "/services/:id",
+  UPLOAD_IMAGE = "/services/:id/image",
+  TOGGLE_STATUS = "/services/:id/toggle-status",
+  DELETE = "/services/:id",
+}
