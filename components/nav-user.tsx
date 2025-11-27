@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   IconCreditCard,
@@ -6,13 +6,9 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,32 +17,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useSession } from "@/hooks/useSession"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/ui/sidebar";
+import { useSession } from "@/hooks/useSession";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Génère les initiales à partir du prénom et du nom
  */
 function getInitials(prenom: string, nom: string): string {
-  const prenomInitial = prenom?.charAt(0)?.toUpperCase() || ""
-  const nomInitial = nom?.charAt(0)?.toUpperCase() || ""
-  return `${prenomInitial}${nomInitial}`
+  const prenomInitial = prenom?.charAt(0)?.toUpperCase() || "";
+  const nomInitial = nom?.charAt(0)?.toUpperCase() || "";
+  return `${prenomInitial}${nomInitial}`;
 }
 
 export function NavUser() {
-  const { isMobile } = useSidebar()
-  const { user, logout, isLoading } = useSession()
+  const { isMobile } = useSidebar();
+  const { user, logout, isLoading } = useSession();
 
   // Si l'utilisateur n'est pas connecté, ne rien afficher
   if (!user && !isLoading) {
-    return null
+    return null;
   }
 
   // Afficher un spinner pendant le chargement
@@ -57,16 +53,18 @@ export function NavUser() {
           <SidebarMenuButton size="lg">
             <Spinner className="h-8 w-8" />
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate text-muted-foreground">Chargement...</span>
+              <span className="truncate text-muted-foreground">
+                Chargement...
+              </span>
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
-    )
+    );
   }
 
-  const fullName = `${user!.prenom} ${user!.nom}`
-  const initials = getInitials(user!.prenom, user!.nom)
+  const fullName = `${user!.prenom} ${user!.nom}`;
+  const initials = getInitials(user!.prenom, user!.nom);
 
   return (
     <SidebarMenu>
@@ -118,17 +116,12 @@ export function NavUser() {
                 <IconUserCircle />
                 Mon compte
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Facturation
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => logout()} className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              onClick={() => logout()}
+              className="text-destructive focus:text-destructive"
+            >
               <IconLogout />
               Se déconnecter
             </DropdownMenuItem>
@@ -136,5 +129,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
