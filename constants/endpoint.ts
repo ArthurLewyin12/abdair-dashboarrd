@@ -53,3 +53,15 @@ export enum ServiceEndpoints {
   TOGGLE_STATUS = "/services/:id/toggle-status",
   DELETE = "/services/:id",
 }
+
+/**
+ * Endpoints relatifs à la gestion des messages de contact.
+ */
+export enum ContactMessageEndpoints {
+  LIST = "/contact",
+  DETAIL = "/contact/:id",
+  NEW = "/contact/new",
+  CREATE = "/contact",
+  UPDATE_STATUS = "/contact/:id/status",
+  DELETE = "/contact/:id",
+}

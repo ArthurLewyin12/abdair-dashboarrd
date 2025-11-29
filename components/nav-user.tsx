@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   IconCreditCard,
   IconDotsVertical,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "@/hooks/useSession";
 import { Spinner } from "@/components/ui/spinner";
+import { AccountSettingsDialog } from "@/components/account/account-settings-dialog";
 
 /**
  * Génère les initiales à partir du prénom et du nom
@@ -39,6 +41,7 @@ function getInitials(prenom: string, nom: string): string {
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, logout, isLoading } = useSession();
+  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
 
   // Si l'utilisateur n'est pas connecté, ne rien afficher
   if (!user && !isLoading) {
@@ -112,7 +115,7 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsAccountDialogOpen(true)}>
                 <IconUserCircle />
                 Mon compte
               </DropdownMenuItem>
@@ -127,6 +130,13 @@ export function NavUser() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Account Settings Dialog */}
+        <AccountSettingsDialog
+          user={user ?? null}
+          open={isAccountDialogOpen}
+          onOpenChange={setIsAccountDialogOpen}
+        />
       </SidebarMenuItem>
     </SidebarMenu>
   );

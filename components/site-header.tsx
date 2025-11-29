@@ -10,6 +10,7 @@ const routeTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/dashboard/job-offers": "Offres d'emploi",
   "/dashboard/services": "Services",
+  "/dashboard/contact-messages": "Messages de contact",
 }
 
 export function SiteHeader() {

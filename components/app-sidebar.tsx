@@ -18,6 +18,7 @@ import {
   IconUsers,
   IconBriefcase,
   IconTool,
+  IconMail,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -49,6 +50,11 @@ const data = {
       title: "Services",
       url: "/dashboard/services",
       icon: IconTool,
+    },
+    {
+      title: "Messages de contact",
+      url: "/dashboard/contact-messages",
+      icon: IconMail,
     },
   ],
   navSecondary: [
